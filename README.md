@@ -1,2 +1,2 @@
 # DevOpsCourse
-Andersen DevOps Course stuff
+Andersen DevOps course stuff
