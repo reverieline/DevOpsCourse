@@ -1,6 +1,6 @@
 # Whoishere Script
 ## Description
-The script shows information about most popular foreighn connections on the local machine.
+The script shows information about most popular foreign connections on the local machine.
 
 ## Usage
 ```sh
