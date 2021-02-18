@@ -13,7 +13,7 @@ dim(){
   echo $(cal $1 $2 | awk 'NF {DAYS = $NF}; END {print DAYS}')
 }
 
-# volatility function.  
+# volatility function
 # $1 - from date
 # $2 - to date
 vol() {
@@ -22,7 +22,6 @@ vol() {
   echo $v
 }
 
-array=""
 for y in $(seq $3 $4); do
   echo $2 $y - $(vol "$y-$2-01T00:00:00" "$y-$2-$(dim $2 $y)T23:59:59")
 done
