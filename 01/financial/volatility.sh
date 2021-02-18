@@ -8,7 +8,7 @@ fi
 
 PAIRS=$(jq -r '.prices[]|@tsv' $1)
 
-# days in month
+# num days in month
 dim(){
   echo $(cal $1 $2 | awk 'NF {DAYS = $NF}; END {print DAYS}')
 }
@@ -18,7 +18,7 @@ dim(){
 # $2 - to date
 vol() {
   local pairs="$(echo "$PAIRS" | awk "\$1>$(date --date=$1 +%s)000 && \$1<$(date --date=$2 +%s)000 {print}")"
-  local v=$(echo "$pairs" | awk 'NR==1 {min=$2} $2<min {min=$2} NR==1 {max=$2} max<$2 {max=$2} END { print max-min, "(records: " NR}')
+  local v=$(echo "$pairs" | awk 'NR==1 {min=$2} $2<min {min=$2} NR==1 {max=$2} max<$2 {max=$2} END { print (max-min)/2, "(records: " NR}')
   echo $v
 }
 
