@@ -7,6 +7,7 @@ err() { cat <<< "$@" 1>&2; }
 NUMLINES=5
 PROCESS=""
 STATE=""
+FIELD="^organization"
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -26,6 +27,11 @@ while [[ $# -gt 0 ]]; do
     ;;
     -s|--state)
     STATE="$2"
+    shift
+    shift
+    ;;
+    -f|--field)
+    FIELD="$2"
     shift
     shift
     ;;
@@ -62,6 +68,11 @@ if [ ! -z "$PROCESS" ]; then
   fi
 fi
 
+re='^\^'
+if [[ ! "$FIELD" =~ $re ]]; then
+  FIELD="^$FIELD"
+fi
+
 if [ ! -z "$STATE" ]; then
   STATE=$(echo "$STATE" | tr a-z A-Z)
 fi
@@ -79,6 +90,8 @@ REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5,
 REMOTES=$(echo "$REMOTES" | grep "$PROCESS")
 REMOTES=$(echo "$REMOTES" | grep "$STATE")
 
+if [ -z  "$REMOTES" ];then exit 0; fi
+
 echo "CONNECTIONS:"
 echo "$REMOTES"
 
@@ -88,5 +101,11 @@ IPS=$(echo "$REMOTES" | cut -d: -f1 | sort | uniq -c | sort | tail -n "$NUMLINES
 
 for ip in $IPS
 do
-  echo $ip $'\t' $(whois $ip | awk -F':' '/^Organization/ {print $2}')
+  echo $ip $'\t' $(whois $ip | grep  -i "$FIELD")
 done
+
+
+
+
+
+

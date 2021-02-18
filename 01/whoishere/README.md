@@ -1,10 +1,17 @@
 # Whoishere Script
 ## Description
-The script shows organizations of most popular remote connections opened on local machine.
+The script show information about most popular foreighn connections on the local machine.
 
 ## Usage
 ```sh
-sudo ./whoishere [-p process_name_or_pid -s connection_state -n num_lines_to_output]
+sudo ./whoishere.sh [-p process_name_or_pid -s connection_state -n num_lines_to_output  -f field_to_fetch]
+```
+
+## Examples
+```sh
+sudo ./whoishere.sh -p firefox
+sudo ./whoishere.sh -f organization
+sudo ./whoishere.sh -n 10 -f desc -s estab
 ```
 
 ## Dependencies
