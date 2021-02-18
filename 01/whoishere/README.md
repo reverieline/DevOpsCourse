@@ -1,6 +1,6 @@
 # Whoishere Script
 ## Description
-The script shows organizations of most popular of most popular remote connections opened on local machine.
+The script shows organizations of most popular remote connections opened on local machine.
 
 ## Usage
 ```sh

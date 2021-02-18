@@ -1,8 +1,12 @@
 #!/bin/bash
-# Script description
+# Script description here
 
-POSITIONAL=()
+err() { cat <<< "$@" 1>&2; }
+
+# Load parameters
 NUMLINES=5
+PROCESS=""
+STATE=""
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -25,44 +29,55 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-    *)
-    POSITIONAL+=("$1")
-    shift
-    ;;
   esac
 done
-set -- "${POSITIONAL[@]}"
 
-if [ -z $(which netstat) ]; then
-  echo "Please, install net-tools package"
-  exit
+
+# Check parameters environment
+
+if [ -z "$(which netstat)" ]; then
+  errr "Please, install net-tools package."
+  exit 1
 fi
 
-if [ -z $(which whois) ]
-  then echo "Please, iinstall whois(1): sudo apt-get install whois -y"
-  exit
+if [ -z "$(which whois)" ]; then
+  err "Please, iinstall whois package."
+  exit 1
 fi
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please, run as root"
-  exit
+if [ "$EUID" -ne 0 ]; then
+  err "Please, run as root."
+  exit 1
 fi
 
-REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/  {print $5, $6, $7}' | column -t)"
 
-if [ ! -z $PROCESS ]; then
+# Check parameters
+
+if [ ! -z "$PROCESS" ]; then
   re='^[0-9]+$'
-  if [[ $PROCESS =~ $re ]]; then
-    PROCESS="[^0-9]${PROCESS}/"
+  if [[ "$PROCESS" =~ $re ]]; then
+     PROCESS="[^0-9]${PROCESS}/"
+  else
+    PROCESS="/$PROCESS"
   fi
-  REMOTES=$(echo "$REMOTES" | grep $PROCESS)
 fi
 
-if [ ! -z $STATE ]; then
-  REMOTES=$(echo "$REMOTES" | grep $STATE)
+if [ ! -z "$STATE" ]; then
+  STATE=$(echo "$STATE" | tr a-z A-Z)
 fi
 
-if [ -z $REMOTES ]; then exit; fi
+re='^[0-9]+$'
+if [[  ! "$NUMLINES" =~ $re ]]; then
+  err "-n shoud be natural number"
+  exit 1
+fi
+
+
+# fetch data
+
+REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5, $6, $7}' | column -t)" 
+REMOTES=$(echo "$REMOTES" | grep "$PROCESS")
+REMOTES=$(echo "$REMOTES" | grep "$STATE")
 
 echo "CONNECTIONS:"
 echo "$REMOTES"
