@@ -12,7 +12,7 @@ while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
     -h|--help)
-    echo "Usage: sudo $0 -p process_name_or_pid -n num_lines_to_output -s connection_state"
+    echo "Usage: sudo $0 -p process_name_or_pid -n num_lines_to_output -s connection_state -f field_to_fetch"
     exit
     ;;
     -p|--process)
@@ -39,20 +39,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-# Check parameters environment
+# Check environment
 
 if [ -z "$(which netstat)" ]; then
-  errr "Please, install net-tools package."
+  err "Please install net-tools package."
   exit 1
 fi
 
 if [ -z "$(which whois)" ]; then
-  err "Please, iinstall whois package."
+  err "Please iinstall whois package."
   exit 1
 fi
 
 if [ "$EUID" -ne 0 ]; then
-  err "Please, run as root."
+  err "Please run as root."
   exit 1
 fi
 
@@ -84,7 +84,7 @@ if [[  ! "$NUMLINES" =~ $re ]]; then
 fi
 
 
-# fetch data
+# Fetch data
 
 REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5, $6, $7}' | column -t)" 
 REMOTES=$(echo "$REMOTES" | grep "$PROCESS")
