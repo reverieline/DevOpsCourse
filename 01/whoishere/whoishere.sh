@@ -1,14 +1,17 @@
 #!/bin/bash
-# Script description here
+
+# Output to stderr
 
 err() { cat <<< "$@" 1>&2; }
 
+
 # Load parameters
+
 NUMLINES=5
 PROCESS=""
 STATE=""
-FIELD="^organization"
-while [[ $# -gt 0 ]]; do
+FIELD="organization"
+while [ $# -gt 0 ]; do
   key="$1"
   case $key in
     -h|--help)
@@ -52,8 +55,7 @@ if [ -z "$(which whois)" ]; then
 fi
 
 if [ "$EUID" -ne 0 ]; then
-  err "Please run as root."
-  exit 1
+  echo "Run as root to see more details"
 fi
 
 
@@ -66,11 +68,6 @@ if [ ! -z "$PROCESS" ]; then
   else
     PROCESS="/$PROCESS"
   fi
-fi
-
-re='^\^'
-if [[ ! "$FIELD" =~ $re ]]; then
-  FIELD="^$FIELD"
 fi
 
 if [ ! -z "$STATE" ]; then
@@ -86,11 +83,13 @@ fi
 
 # Fetch data
 
-REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5, $6, $7}' | column -t)" 
+REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5, $6, $7}' | column -t)"
 REMOTES=$(echo "$REMOTES" | grep "$PROCESS")
 REMOTES=$(echo "$REMOTES" | grep "$STATE")
 
-if [ -z  "$REMOTES" ];then exit 0; fi
+if [ -z  "$REMOTES" ];then
+  exit;
+fi
 
 echo "CONNECTIONS:"
 echo "$REMOTES"
@@ -101,7 +100,7 @@ IPS=$(echo "$REMOTES" | cut -d: -f1 | sort | uniq -c | sort | tail -n "$NUMLINES
 
 for ip in $IPS
 do
-  echo $ip $'\t' $(whois $ip | grep  -i "$FIELD")
+  echo $ip $'\t' $(whois $ip | grep  -i "^$FIELD")
 done
 
 
