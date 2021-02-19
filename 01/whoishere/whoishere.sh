@@ -83,7 +83,10 @@ fi
 
 # Fetch data
 
-REMOTES="$(netstat -tunapl | awk 'NR>2 && $6~/^[^0-9]/ && $5~/^[1-9]/ {print $5, $6, $7}' | column -t)"
+REMOTES="$(netstat -tunapl |
+	awk '$6~/^[^0-9]/ && $5~/^[1-9]/ {
+		print $5, $6, $7}' |
+	column -t)"
 REMOTES=$(echo "$REMOTES" | grep "$PROCESS")
 REMOTES=$(echo "$REMOTES" | grep "$STATE")
 
@@ -94,17 +97,11 @@ fi
 echo "CONNECTIONS:"
 echo "$REMOTES"
 
+IPS=$(echo "$REMOTES" | cut -d: -f1 | sort | uniq -c | sort)
+IPS=$(echo "$IPS" | tail -n "$NUMLINES" | grep -oP '(\d+\.){3}\d+')
+
 echo $'\nWHOIS:'
-
-IPS=$(echo "$REMOTES" | cut -d: -f1 | sort | uniq -c | sort | tail -n "$NUMLINES" | grep -oP '(\d+\.){3}\d+')
-
 for ip in $IPS
 do
   echo $ip $'\t' $(whois $ip | grep  -i "^$FIELD")
 done
-
-
-
-
-
-
