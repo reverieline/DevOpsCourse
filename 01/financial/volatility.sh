@@ -3,8 +3,9 @@
 err() { cat <<< "$@" 1>&2; }
 
 showhelp() {
-  echo "Volatility by month"
-  echo "Usage: $0 --quotes-path --start-year --end-year"
+  echo "Month by month volatility"
+  echo "Usage: $0 <--quotes-path|-q quotes_file.json> [--start-year|-s YYYY_start --end-year|-e YYYY_end]"
+  echo "Example: $0 -q quotes.json -s 2015 -e 2017"
   exit
 }
 
