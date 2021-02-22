@@ -103,5 +103,10 @@ IPS=$(echo "$IPS" | tail -n "$NUMLINES" | grep -oP '(\d+\.){3}\d+')
 echo $'\nWHOIS:'
 for ip in $IPS
 do
-  echo $ip $'\t' $(whois $ip | grep  -i "^$FIELD")
+  if [ "$FIELD"="organization" ]
+  then 
+    echo $ip $'\t' $(whois $ip | awk -F':' '/^OrgName|^org-name|^role|^person/ {print $2}' | tr -s ' ' | uniq)
+  else
+    echo $ip $'\t' $(whois $ip | grep -i "^$FIELD" | uniq)
+  fi
 done
