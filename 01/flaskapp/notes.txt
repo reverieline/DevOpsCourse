@@ -1,0 +1,4 @@
+- chekc if python3 installed;
+- check if pip3 installed (python3-pip);
+- chekc if flask package is installed;
+- read how to prepare flask app for production env
