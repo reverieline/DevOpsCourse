@@ -50,11 +50,7 @@ PRS=$(echo "$PRS" | sort -k1,2 | uniq -c | sort -r )
 echo "Most active contributors for ${USER}/${REPO}"
 echo "$(echo "$PRS" | awk 'BEGIN { print "User", "Open_PRs"} { print $3, $1 }' | column -t)"
 
-
 echo
 echo "Labels"
 LABELS=$(echo "$DATA" | jq -r '.[]| [ .head.label ] |@tsv')
 echo "$(echo "$LABELS" | sort -u)"
-
-
-
