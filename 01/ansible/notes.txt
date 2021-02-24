@@ -1,0 +1,5 @@
+- generate ssh keypair:
+ssh-keygen
+
+- copy pub key to target
+ssh-copy-id uname@node
