@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from random import random
-from  waitress import serve
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -17,8 +17,15 @@ def index():
   else:
     json = request.get_json()
     char = randomchr()
-    word = json["word"]
-    count = json["count"]
+
+    try: json["word"]
+    except: word = "Hello!"
+    else: word = json["word"]
+
+    try: json["count"]
+    except: count = 1
+    else: count = json["count"]
+
     return ((char+word) * count + char, 200)
 
 if __name__ == '__main__':

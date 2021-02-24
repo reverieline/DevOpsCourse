@@ -3,4 +3,4 @@
 
 - allow non-root process to listen on protected port:
 setcap 'cap_net_bind_service=+ep' /path/to/program
-sudo setcap 'cap_net_bind_service=+ep' $(readline -f $(which python3))
+sudo setcap 'cap_net_bind_service=+ep' $(readlink -f $(which python3))
