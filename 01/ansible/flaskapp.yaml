@@ -1,4 +1,32 @@
 - hosts: all
   tasks:
-    - name: Ping targes
-      ansible.builtin.ping:
+    - name: Install apt dependencies
+      apt:
+        pkg:
+          - python3
+          - python3-pip
+        update_cache: yes
+        state: present
+      become: yes
+      register: apt_result
+      retries: 3
+      until: apt_result is success
+
+    - name: Install pip dependencies 
+      pip:
+        name:
+          - flask
+          - waitress
+      when: apt_result is success
+
+    - name: Clone git repository
+      git:
+        repo: https://github.com/reverieline/devopscourse.git
+        dest: ~/devopscourse
+
+    - name:  Link flask app to /srv
+      file:
+        src: /home/{{ ansible_user }}/devopscourse/01/flaskapp
+        dest: /srv/flaskapp
+        state: link
+      become: yes
