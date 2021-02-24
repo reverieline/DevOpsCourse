@@ -22,11 +22,22 @@
     - name: Clone git repository
       git:
         repo: https://github.com/reverieline/devopscourse.git
-        dest: ~/devopscourse
+        dest: /tmp/devopscourse
 
-    - name:  Link flask app to /srv
+    - name: Link flask app to /srv
       file:
-        src: /home/{{ ansible_user }}/devopscourse/01/flaskapp
+        src: /tmp/devopscourse/01/flaskapp
         dest: /srv/flaskapp
         state: link
+      become: yes
+
+    - name: Fetch python3 executalbe
+      shell: readlink -f $(which python3)
+      register: py3path
+
+    - name: Allow python3 to listen on protected ports
+      capabilities:
+        path: "{{ py3path.stdout }}"
+        capability: cap_net_bind_service+ep
+        state: present
       become: yes
