@@ -1,13 +1,13 @@
 # Emoji Decoration Flask App
 ## Description
-The application accepts api requests on port 80 and return a string decorated with random emoji.
+The application accepts api requests on port 80 and returns a string decorated with random emoji.
 
 ## JSON API
 POST request to the root of server:
 ```json
 {
-  "word": "test", // string to decorate
-  "count": "3",   // how many decorated strings to return
+  "word": "<string_to_decorate>",
+  "count": <number_of_repeats>,
 }
 ```
 
