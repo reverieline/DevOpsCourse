@@ -1,8 +1,9 @@
 # Ansible playbook to deploy Emoji Flask App
-## Run
+## Notes
 Edit inventory.yaml to adapt playboot to your environment.
-By default it assumed that target hosts have already ssh key transfered.
-To override this behavior, the next host variables should be set:
+
+By default it assumed that target hosts have already ssh keys transfered.
+Otherwise, the corresponding variables should be set to enable password authorization:
 ```yaml
 all:
   hosts:
@@ -13,7 +14,7 @@ all:
 ```
 
 Some tasks need raised privileges.
-To enable ansible to aquire root priviliges you couuld either set -K flag to ansible-playbook or set sudo password to host variables:
+To enable ansible to aquire root priviliges you could either set -K flag to `ansible-playbook` or set sudo password to host variables:
 ```yaml
 all:
   hosts:
@@ -21,3 +22,7 @@ all:
       ansible_sudo_pass: <sudo_pass>
 ```
 
+## Run
+```sh
+ansible-playbook -K -i inventory.yaml flaskapp.yaml
+```
