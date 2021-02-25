@@ -1,5 +1,36 @@
 - hosts: all
+
+  vars:
+    flaskapp_path: /srv/flaskapp
+    flaskapp_user: flaskapp
+
   tasks:
+    - name: Transfer auth key form current user
+      authorized_key:
+        user: "{{ lookup('env','USER') }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+    - name: Desable ssh password auth
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^(.*)PasswordAuthentication(.*)$"
+        line: "PasswordAuthentication no"
+      become: yes
+
+    - name: Disable ssh root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^(.*)PermitRootLogin(.*)$"
+        line: "PermitRootLogin no"
+      become: yes
+
+    - name: Create flaskapp user
+      user:
+        name: "{{ flaskapp_user }}"
+        comment: Flask App User
+      become: yes
+
     - name: Install apt dependencies
       apt:
         pkg:
@@ -18,6 +49,7 @@
           - flask
           - waitress
       when: apt_result is success
+      become: yes
 
     - name: Clone git repository
       git:
@@ -27,9 +59,10 @@
     - name: Link flask app to /srv
       file:
         src: /tmp/devopscourse/01/flaskapp
-        dest: /srv/flaskapp
+        dest: "{{ flaskapp_path }}"
         state: link
       become: yes
+
 
     - name: Fetch python3 executalbe
       shell: readlink -f $(which python3)
@@ -40,4 +73,24 @@
         path: "{{ py3path.stdout }}"
         capability: cap_net_bind_service+ep
         state: present
+      become: yes
+
+    - name: Create service
+      template:
+        src: flaskapp.service.j2
+        dest: /lib/systemd/system/flaskapp.service
+      become: yes
+      notify:
+        - reload systemctl
+    
+    - name: start flaskapp.service
+      service:
+        name: flaskapp.service
+        state: started
+        enabled: yes
+      become: yes
+
+  handlers:
+    - name: reload systemctl
+      command: systemctl daemon-reload
       become: yes

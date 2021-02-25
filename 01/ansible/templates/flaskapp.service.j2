@@ -1,0 +1,14 @@
+[Unit]
+Description=Flask  App
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{ flaskapp_user }}
+ExecStart={{ py3path.stdout }} {{ flaskapp_path }}
+
+[Install]
+WantedBy=multi-user.target
