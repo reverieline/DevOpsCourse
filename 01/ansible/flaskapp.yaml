@@ -14,20 +14,31 @@
     - name: Disable ssh password auth
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^(#*)PasswordAuthentication(.*)$'
+        regexp: '^(#*)PasswordAuthentication'
         line: "PasswordAuthentication no"
       become: yes
+      notify: reload sshd
 
     - name: Disable ssh root login
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: '^(#*)PermitRootLogin(.*)$'
+        regexp: '^(#*)PermitRootLogin'
         line: "PermitRootLogin no"
       become: yes
+      notify: reload sshd
 
     
     - name: Iptables block
       block:
+        - name: Install iptables-persistent
+          apt:
+            name: iptables-persistent
+            state: present
+        - name: Enable netfilter-persistent service
+          service:
+            name: netfilter-persistent
+            state: started
+            enabled: yes
         - name: Flush rules
           iptables:
             chain: "{{ item }}"
@@ -36,6 +47,11 @@
             - INPUT
             - OUTPUT
             - FORWARD
+        - name: Allow input to lo
+          iptables:
+            chain: INPUT
+            in_interface: lo
+            jump: ACCEPT
         - name: Allow established connections
           iptables:
             chain: INPUT
@@ -48,7 +64,7 @@
             protocol: "{{ item[1] }}"
             jump: ACCEPT
           with_nested:
-            - ["22","80","433"]
+            - ["22","80","443"]
             - ["tcp","udp"]
         - name: Set policy
           iptables:
@@ -128,4 +144,10 @@
   handlers:
     - name: reload systemctl
       command: systemctl daemon-reload
+      become: yes
+    
+    - name: reload sshd
+      service:
+        name: sshd
+        state: reloaded
       become: yes
