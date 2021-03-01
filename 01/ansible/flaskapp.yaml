@@ -11,20 +11,55 @@
         state: present
         key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
-    - name: Desable ssh password auth
+    - name: Disable ssh password auth
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: "^(.*)PasswordAuthentication(.*)$"
+        regexp: '^(#*)PasswordAuthentication(.*)$'
         line: "PasswordAuthentication no"
       become: yes
 
     - name: Disable ssh root login
       lineinfile:
         path: /etc/ssh/sshd_config
-        regexp: "^(.*)PermitRootLogin(.*)$"
+        regexp: '^(#*)PermitRootLogin(.*)$'
         line: "PermitRootLogin no"
       become: yes
 
+    
+    - name: Iptables block
+      block:
+        - name: Flush rules
+          iptables:
+            chain: "{{ item }}"
+            flush: yes
+          with_items:
+            - INPUT
+            - OUTPUT
+            - FORWARD
+        - name: Allow established connections
+          iptables:
+            chain: INPUT
+            ctstate: ESTABLISHED,RELATED
+            jump: ACCEPT
+        - name: Open ports
+          iptables:
+            chain: INPUT
+            destination_port: "{{ item[0] }}"
+            protocol: "{{ item[1] }}"
+            jump: ACCEPT
+          with_nested:
+            - ["22","80","433"]
+            - ["tcp","udp"]
+        - name: Set policy
+          iptables:
+            chain: "{{ item }}"
+            policy: DROP
+          with_items:
+            - INPUT
+            - FORWARD
+      become: yes
+
+    
     - name: Create flaskapp user
       user:
         name: "{{ flaskapp_user }}"
