@@ -105,11 +105,12 @@
     - name: Clone git repository
       git:
         repo: https://github.com/reverieline/devopscourse.git
-        dest: /tmp/devopscourse
+        dest: /var/devopscourse
+      become: yes
 
     - name: Link flask app to /srv
       file:
-        src: /tmp/devopscourse/01/flaskapp
+        src: /var/devopscourse/01/flaskapp
         dest: "{{ flaskapp_path }}"
         state: link
       become: yes
