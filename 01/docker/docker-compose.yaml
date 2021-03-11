@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  flaskapp:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - VARIABLE_NAME=app
