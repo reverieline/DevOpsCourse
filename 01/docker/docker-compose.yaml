@@ -3,6 +3,4 @@ services:
   flaskapp:
     build: .
     ports:
-      - "8080:80"
-    environment:
-      - VARIABLE_NAME=app
+      - "8080:8000"

@@ -3,4 +3,4 @@ RUN pip install flask
 RUN pip install gunicorn
 COPY ./flaskapp/ /app
 WORKDIR /app
-CMD ["gunicorn","-w 4","wsgi:app"]
+CMD ["gunicorn","-w 4","-b 0.0.0.0","wsgi:app"]
