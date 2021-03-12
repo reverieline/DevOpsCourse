@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from random import random
+import json
 
 app = Flask(__name__)
 
@@ -14,15 +15,18 @@ def index():
   if request.method == "GET":
     return render_template("index.html", chr1=randomchr(), chr2=randomchr(), host=request.host)
   else:
-    json = request.get_json()
-    char = randomchr()
+    # data = request.get_json()
+    data = request.get_data()
+    try: data = json.loads(data)
+    except: pass
 
-    try: json["word"]
+    try: data["word"]
     except: word = "Hello!"
-    else: word = json["word"]
+    else: word = data["word"]
 
-    try: json["count"]
+    try: data["count"]
     except: count = 1
-    else: count = json["count"]
-
+    else: count = data["count"]
+    
+    char = randomchr()
     return ((char+word) * count + char, 200)
