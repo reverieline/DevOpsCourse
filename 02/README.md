@@ -1,4 +1,4 @@
-#Домашнее задание по СУБД PostgreSQL
+# Домашнее задание по СУБД PostgreSQL
 
 1. Поднять 2 сервера PostgreSQL в конфигурации primary standby с
 использованием physical streaming replication.
