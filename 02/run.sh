@@ -27,7 +27,7 @@ docker run --name pg_standby \
 --network pg_net \
 -v "$PWD/pg_standby.conf":/etc/postgres/postgres.sql \
 -v "$PWD/pg_data_standby":/var/lib/postgresql/data \
--e POSTGRES_PASSWORD=$PASS postgres
+-e POSTGRES_PASSWORD=$PASS -d postgres
 
 #docker run -i --link pg_main:pg postgres psql postgresql://postgres:$PASS@pg/postgres <<EOF
 #	create table test(value BIGINT);
