@@ -33,7 +33,7 @@ sudo ./test_async.sh 100000
 ```
 ## Report
 Database statistic is available on pgBadger report.
-Generated presentation is available on http://localhost:8080/postgresql.html
-'''sh
+Generated presentation is served on localhost (http://localhost:8080/postgresql.html)
+```sh
 sudo ./pgbadger.sh
-'''
+```
