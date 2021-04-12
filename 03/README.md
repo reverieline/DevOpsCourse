@@ -40,11 +40,3 @@
 - Написать README.md
 
 Отдельно будет оцениваться творческая составляющая.
-
-# Solution
-
-1. Install local GitLab runner.
-2. Register runner:
-- got to gitlab.com Settings > CI/CD > Runners.
-- save host and token for registering manual runner.
-3. Add credentials GitLab CI/CD environmetn variables to access deployment machine.
